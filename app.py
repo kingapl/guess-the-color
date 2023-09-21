@@ -4,6 +4,7 @@ import pygame
 class App:
     pygame.init()
     screen = pygame.display.set_mode((1280, 720))
+    pygame.display.set_caption("Guess the color")
 
     running = True
 

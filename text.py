@@ -1,13 +1,10 @@
 import pygame
 
-from settings import Settings
-
 
 class Text:
-    def __init__(self, screen, text, color):
-        self.settings = Settings()
+    def __init__(self, screen, text, color, font_size):
         self.screen = screen
-        self.font = pygame.font.Font(pygame.font.get_default_font(), self.settings.font_size)
+        self.font = pygame.font.Font(pygame.font.get_default_font(), font_size)
         self.surface = self.font.render(text, True, color)
         self.width = self.surface.get_rect().width
 

@@ -2,7 +2,8 @@ class Settings:
     def __init__(self):
         self.screen_width = 1280
         self.screen_height = 720
-        self.font_size = 100
+        self.color_font_size = 100
+        self.answer_font_size = 60
 
         self.background_color = (197, 202, 207)
         self.brown = (79, 33, 13)

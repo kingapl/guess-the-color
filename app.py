@@ -16,6 +16,7 @@ class App:
         pygame.display.set_caption("Guess the color")
 
         self.running = False
+        self.chosen = False
         self.color_to_guess = None
         self.answer1 = None
         self.answer2 = None
@@ -37,14 +38,12 @@ class App:
 
     def run(self):
         self.running = True
-        chosen = False
 
         while self.running:
             self._check_events()
 
-            if not chosen:
+            if not self.chosen:
                 color, color_name = self._choose_color(self.colors)
-                chosen = True
 
                 self.color_to_guess = Text(self.screen, color_name, color, self.settings.color_font_size)
 
@@ -52,6 +51,8 @@ class App:
 
                 self.answer1 = Text(self.screen, answers.pop(), self.settings.black, self.settings.answer_font_size)
                 self.answer2 = Text(self.screen, answers.pop(), self.settings.black, self.settings.answer_font_size)
+
+                self.chosen = True
 
             self._update_screen()
 
@@ -61,6 +62,11 @@ class App:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    self.chosen = False
+                if event.key == pygame.K_RIGHT:
+                    self.chosen = False
 
     def _choose_color(self, colors):
         color_name = choice(list(colors.keys()))

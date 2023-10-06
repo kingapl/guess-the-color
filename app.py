@@ -76,6 +76,12 @@ class App:
             if event.type == pygame.QUIT:
                 self.running = False
             if event.type == pygame.KEYDOWN:
+                if self.guessing_attempts <= 0:
+                    if event.key == pygame.K_RETURN:
+                        self.guessing_attempts = 10
+                        self.points = 0
+                        self.points_text = None
+                        self.end = False
                 if event.key == pygame.K_LEFT:
                     if self._check_answer(self.answer1):
                         self.points += 1
@@ -132,6 +138,9 @@ class App:
                            f"Średni czas Twoich odpowiedzi to {str(round(self._calculate_average(), 4))} sekund",
                            self.settings.black, None, 40)
             average.display(self.screen_rect.centerx - (average.width / 2), 350)
+
+            info = Text(self.screen, "Aby rozpocząć od nowa naciśnij ENTER", self.settings.black, None, 26)
+            info.display(self.screen_rect.centerx - (info.width / 2), 430)
 
             self.end = True
 

@@ -76,6 +76,12 @@ class App:
             if event.type == pygame.QUIT:
                 self.running = False
             if event.type == pygame.KEYDOWN:
+                if self.guessing_attempts <= 0:
+                    if event.key == pygame.K_RETURN:
+                        self.guessing_attempts = 10
+                        self.points = 0
+                        self.points_text = None
+                        self.end = False
                 if event.key == pygame.K_LEFT:
                     if self._check_answer(self.answer1):
                         self.points += 1

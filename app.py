@@ -139,6 +139,9 @@ class App:
                            self.settings.black, None, 40)
             average.display(self.screen_rect.centerx - (average.width / 2), 350)
 
+            info = Text(self.screen, "Aby rozpocząć od nowa naciśnij ENTER", self.settings.black, None, 26)
+            info.display(self.screen_rect.centerx - (info.width / 2), 430)
+
             self.end = True
 
         pygame.display.flip()

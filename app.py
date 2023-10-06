@@ -1,3 +1,4 @@
+from datetime import datetime
 from random import choice
 
 import pygame
@@ -26,6 +27,9 @@ class App:
         self.left_arrow = Arrow(self.screen, "images/left-arrow.png")
         self.right_arrow = Arrow(self.screen, "images/right-arrow.png")
         self.points_text = None
+        self.start_time = None
+        self.end_time = None
+        self.durations = []
 
         self.colors = {
             "brązowy": self.settings.brown,
@@ -60,6 +64,7 @@ class App:
                                         self.settings.answer_font_size)
 
                     self.chosen = True
+                    self.start_time = datetime.now()
 
                 self._update_points()
                 self._update_screen()
@@ -74,13 +79,17 @@ class App:
                 if event.key == pygame.K_LEFT:
                     if self._check_answer(self.answer1):
                         self.points += 1
+                    self.end_time = datetime.now()
                     self.chosen = False
                     self.guessing_attempts -= 1
+                    self.durations.append((self.end_time - self.start_time).total_seconds())
                 if event.key == pygame.K_RIGHT:
                     if self._check_answer(self.answer2):
                         self.points += 1
+                    self.end_time = datetime.now()
                     self.chosen = False
                     self.guessing_attempts -= 1
+                    self.durations.append((self.end_time - self.start_time).total_seconds())
 
     def _check_answer(self, answer):
         return answer.text == self.color_to_guess.letters_color_name
@@ -100,6 +109,9 @@ class App:
     def _update_points(self):
         self.points_text = Text(self.screen, str(self.points), self.settings.black, None, 40)
 
+    def _calculate_average(self):
+        return sum(self.durations) / len(self.durations)
+
     def _update_screen(self):
         self.screen.fill(self.settings.background_color)
 
@@ -115,6 +127,12 @@ class App:
         if self.guessing_attempts == 0:
             score = Text(self.screen, f'Twój wynik to {self.points} punktów', self.settings.black, None, 40)
             score.display(self.screen_rect.centerx - (score.width / 2), 300)
+
+            average = Text(self.screen,
+                           f"Średni czas Twoich odpowiedzi to {str(round(self._calculate_average(), 4))} sekund",
+                           self.settings.black, None, 40)
+            average.display(self.screen_rect.centerx - (average.width / 2), 350)
+
             self.end = True
 
         pygame.display.flip()

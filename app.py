@@ -16,6 +16,8 @@ class App:
         pygame.display.set_caption("Guess the color")
 
         self.running = False
+        self.end = False
+        self.guessing_attempts = 10
         self.points = 0
         self.chosen = False
         self.color_to_guess = None
@@ -43,24 +45,24 @@ class App:
 
         while self.running:
             self._check_events()
+            if not self.end:
+                if not self.chosen:
+                    color, color_name = self._choose_color(self.colors)
 
-            if not self.chosen:
-                color, color_name = self._choose_color(self.colors)
+                    self.color_to_guess = Text(self.screen, color_name, color, self._get_color_name_from_rbg(color),
+                                               self.settings.color_font_size)
 
-                self.color_to_guess = Text(self.screen, color_name, color, self._get_color_name_from_rbg(color),
-                                           self.settings.color_font_size)
+                    answers = {self._get_color_name_from_rbg(color), color_name}
 
-                answers = {self._get_color_name_from_rbg(color), color_name}
+                    self.answer1 = Text(self.screen, answers.pop(), self.settings.black, None,
+                                        self.settings.answer_font_size)
+                    self.answer2 = Text(self.screen, answers.pop(), self.settings.black, None,
+                                        self.settings.answer_font_size)
 
-                self.answer1 = Text(self.screen, answers.pop(), self.settings.black, None,
-                                    self.settings.answer_font_size)
-                self.answer2 = Text(self.screen, answers.pop(), self.settings.black, None,
-                                    self.settings.answer_font_size)
+                    self.chosen = True
 
-                self.chosen = True
-
-            self._update_points()
-            self._update_screen()
+                self._update_points()
+                self._update_screen()
 
         pygame.quit()
 
@@ -73,10 +75,12 @@ class App:
                     if self._check_answer(self.answer1):
                         self.points += 1
                     self.chosen = False
+                    self.guessing_attempts -= 1
                 if event.key == pygame.K_RIGHT:
                     if self._check_answer(self.answer2):
                         self.points += 1
                     self.chosen = False
+                    self.guessing_attempts -= 1
 
     def _check_answer(self, answer):
         return answer.text == self.color_to_guess.letters_color_name
@@ -107,6 +111,11 @@ class App:
                                  self.settings.screen_height - self.right_arrow.rect.height)
         self.answer1.display(160, 500)
         self.answer2.display(self.settings.screen_width - self.answer2.width - 160, 500)
+
+        if self.guessing_attempts == 0:
+            score = Text(self.screen, f'Twój wynik to {self.points} punktów', self.settings.black, None, 40)
+            score.display(self.screen_rect.centerx - (score.width / 2), 300)
+            self.end = True
 
         pygame.display.flip()
 

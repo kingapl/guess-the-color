@@ -4,6 +4,8 @@ from random import choice
 import pygame
 
 from arrow import Arrow
+from end_view import EndView
+from start_view import StartView
 from text import Text
 from settings import Settings
 
@@ -17,7 +19,7 @@ class App:
         pygame.display.set_caption("Guess the color")
 
         self.running = False
-        self.end = False
+        self.end = True
         self.guessing_attempts = 10
         self.points = 0
         self.chosen = False
@@ -46,6 +48,7 @@ class App:
 
     def run(self):
         self.running = True
+        self._display_start_view()
 
         while self.running:
             self._check_events()
@@ -76,26 +79,27 @@ class App:
             if event.type == pygame.QUIT:
                 self.running = False
             if event.type == pygame.KEYDOWN:
-                if self.guessing_attempts <= 0:
-                    if event.key == pygame.K_RETURN:
+                if event.key == pygame.K_RETURN:
+                    if self.guessing_attempts <= 0:
                         self.guessing_attempts = 10
                         self.points = 0
                         self.points_text = None
-                        self.end = False
-                if event.key == pygame.K_LEFT:
-                    if self._check_answer(self.answer1):
-                        self.points += 1
-                    self.end_time = datetime.now()
-                    self.chosen = False
-                    self.guessing_attempts -= 1
-                    self.durations.append((self.end_time - self.start_time).total_seconds())
-                if event.key == pygame.K_RIGHT:
-                    if self._check_answer(self.answer2):
-                        self.points += 1
-                    self.end_time = datetime.now()
-                    self.chosen = False
-                    self.guessing_attempts -= 1
-                    self.durations.append((self.end_time - self.start_time).total_seconds())
+                    self.end = False
+                if not self.end:
+                    if event.key == pygame.K_LEFT:
+                        if self._check_answer(self.answer1):
+                            self.points += 1
+                        self.end_time = datetime.now()
+                        self.chosen = False
+                        self.guessing_attempts -= 1
+                        self.durations.append((self.end_time - self.start_time).total_seconds())
+                    if event.key == pygame.K_RIGHT:
+                        if self._check_answer(self.answer2):
+                            self.points += 1
+                        self.end_time = datetime.now()
+                        self.chosen = False
+                        self.guessing_attempts -= 1
+                        self.durations.append((self.end_time - self.start_time).total_seconds())
 
     def _check_answer(self, answer):
         return answer.text == self.color_to_guess.letters_color_name
@@ -131,20 +135,18 @@ class App:
         self.answer2.display(self.settings.screen_width - self.answer2.width - 160, 500)
 
         if self.guessing_attempts == 0:
-            score = Text(self.screen, f'Twój wynik to {self.points} punktów', self.settings.black, None, 40)
-            score.display(self.screen_rect.centerx - (score.width / 2), 300)
-
-            average = Text(self.screen,
-                           f"Średni czas Twoich odpowiedzi to {str(round(self._calculate_average(), 4))} sekund",
-                           self.settings.black, None, 40)
-            average.display(self.screen_rect.centerx - (average.width / 2), 350)
-
-            info = Text(self.screen, "Aby rozpocząć od nowa naciśnij ENTER", self.settings.black, None, 26)
-            info.display(self.screen_rect.centerx - (info.width / 2), 430)
-
             self.end = True
+            self._display_end_view()
 
         pygame.display.flip()
+
+    def _display_start_view(self):
+        start_view = StartView(self, self.settings.background_color)
+        start_view.display()
+
+    def _display_end_view(self):
+        end_view = EndView(self, self.points, self._calculate_average(), self.settings.background_color)
+        end_view.display()
 
 
 if __name__ == '__main__':

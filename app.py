@@ -84,6 +84,8 @@ class App:
                         self.guessing_attempts = 10
                         self.points = 0
                         self.points_text = None
+                        self.durations.clear()
+                        self.start_time = datetime.now()
                     self.end = False
                 if not self.end:
                     if event.key == pygame.K_LEFT:
